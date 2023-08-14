@@ -3,7 +3,7 @@ package org.example.bo;
 import lombok.extern.slf4j.Slf4j;
 import org.example.executor.AsyncTask;
 import org.example.executor.TaskExecutor;
-import org.example.vo.TaskTRequestVo;
+import org.example.vo.TaskRequestVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +18,17 @@ public class TaskHandlerBoImpl implements TaskHandlerBo{
     private TaskExecutor taskExecutor;
 
     @Override
-    public String processTasks(List<TaskTRequestVo> bulkTasks, String requestId) {
+    public String processTasks(List<TaskRequestVo> bulkTasks) {
         log.info("EXEC -> TaskHandlerBoImpl -> processTasks");
         List<AsyncTask> tasks = bulkTasks.stream().map(taskVo ->
                 new AsyncTask(taskExecutor, taskVo.getTaskId(), taskVo.getTaskAwaitCompletion(), taskVo.getProcessingTime())
         ).toList();
-        taskExecutor.executeTasks(tasks, new CountDownLatch(tasks.size()), requestId);
+        taskExecutor.executeTasks(tasks, new CountDownLatch(tasks.size()));
         return "OK";
     }
 
     @Override
-    public List<TaskTRequestVo> getRunningTasks() {
+    public List<TaskRequestVo> getRunningTasks() {
         return taskExecutor.getRunningTasks();
     }
 }

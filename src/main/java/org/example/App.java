@@ -24,7 +24,7 @@ public class App
         AsyncTask taskD = new AsyncTask(executer, 4l, Boolean.FALSE, 5000L);
         AsyncTask taskE = new AsyncTask(executer, 5l, Boolean.TRUE, 5000L);
         System.out.println("===TRIGGERING TASKS===");
-        executer.executeTasks(Arrays.asList(taskA, taskB, taskC, taskD, taskE), new CountDownLatch(5), "123");
+        executer.executeTasks(Arrays.asList(taskA, taskB, taskC, taskD, taskE), new CountDownLatch(5));
         System.out.println("===DONE TRIGGERING===");
     }
 }

@@ -1,6 +1,6 @@
 package org.example.executor;
 
-import org.example.vo.TaskTRequestVo;
+import org.example.vo.TaskRequestVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class TaskMonitor {
     private Integer currentCount = 0;
     private ConcurrentLinkedQueue<AsyncTask> taskQueue = new ConcurrentLinkedQueue<>();
 
-    public synchronized void acquire(AsyncTask task){
+    protected synchronized void acquire(AsyncTask task){
         if(!isAvailable()){
             try {
                 wait();
@@ -26,7 +26,7 @@ public class TaskMonitor {
         taskQueue.add(task);
     }
 
-    public synchronized void release(AsyncTask task){
+    protected synchronized void release(AsyncTask task){
         if(currentCount>0){
             taskQueue.remove(task);
             currentCount--;
@@ -34,8 +34,8 @@ public class TaskMonitor {
         }
     }
 
-    public List<TaskTRequestVo> getCurrentTasks(){
-        return taskQueue.stream().map(x-> new TaskTRequestVo(x.taskId, x.processingTime, x.awaitTaskCompletion)).toList();
+    protected List<TaskRequestVo> getCurrentTasks(){
+        return taskQueue.stream().map(x-> new TaskRequestVo(x.taskId, x.processingTime, x.awaitTaskCompletion)).toList();
     }
 
     private boolean isAvailable(){

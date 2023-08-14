@@ -1,13 +1,14 @@
 package org.example.executor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.vo.TaskTRequestVo;
+import org.example.vo.TaskRequestVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component("customTaskExecutor")
 @Slf4j
@@ -16,27 +17,43 @@ public class TaskExecutor {
    @Autowired
    protected TaskMonitor taskMonitor;
 
-   public void executeTasks(List<AsyncTask> tasks, CountDownLatch latch, String requestId){
-      log.info("EXEC -> TaskExecutor -> executeTasks()");
+   @Autowired
+   private TaskHandler taskHandler;
 
+   private ConcurrentLinkedQueue<AsyncTask> taskQueue = new ConcurrentLinkedQueue<>();
+   private AtomicBoolean executorIsRunning = new AtomicBoolean();
+
+   public void executeTasks(List<AsyncTask> tasks, CountDownLatch latch){
+      log.info("EXEC -> TaskExecutor -> executeTasks()");
       for (AsyncTask task : tasks) {
          task.latch = latch;
-         startTask(task, requestId);
       }
+      taskQueue.addAll(tasks);
+      Runnable executable = this::triggerExecutor;
+      new Thread(executable).start();
       try {
          latch.await();
       } catch (InterruptedException e) {
          throw new RuntimeException(e);
       }
-      log.info("successfully finished processing tasks with reqId "+requestId);
+      log.info("successfully finished processing tasks");
+      System.gc();
    }
 
-   public List<TaskTRequestVo> getRunningTasks(){
+   public List<TaskRequestVo> getRunningTasks(){
       return taskMonitor.getCurrentTasks();
    }
 
-   private void startTask(AsyncTask task, String requestId ){
+   private synchronized void triggerExecutor(){
+      if(!executorIsRunning.get()){
+         while(!taskQueue.isEmpty()){
+            startTask(taskQueue.poll());
+         }
+      }
+   }
+
+   private void startTask(AsyncTask task){
       taskMonitor.acquire(task);
-      task.start();
+      taskHandler.handleTaskExecution(task);
    }
 }
