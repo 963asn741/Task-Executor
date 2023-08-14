@@ -1,9 +1,11 @@
 package org.example.bo;
 
-import org.example.vo.BulkTaskTRequestVo;
+import org.example.vo.TaskTRequestVo;
 
 import java.util.List;
 
 public interface TaskHandlerBo {
-    String processTasks(List<BulkTaskTRequestVo> bulkTasks);
+    String processTasks(List<TaskTRequestVo> bulkTasks, String requestId);
+
+    List<TaskTRequestVo> getRunningTasks();
 }

@@ -1,6 +1,8 @@
 package org.example.executor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.vo.TaskTRequestVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,36 +12,31 @@ import java.util.concurrent.Semaphore;
 @Component("customTaskExecutor")
 @Slf4j
 public class TaskExecutor {
-   protected Semaphore taskMonitor;
 
-   public void executeTasks(List<AsyncTask> tasks, CountDownLatch latch, Integer maxThreadCount){
+   @Autowired
+   protected TaskMonitor taskMonitor;
+
+   public void executeTasks(List<AsyncTask> tasks, CountDownLatch latch, String requestId){
       log.info("EXEC -> TaskExecutor -> executeTasks()");
-      init(maxThreadCount);
+
       for (AsyncTask task : tasks) {
          task.latch = latch;
-         startTask(task);
+         startTask(task, requestId);
       }
       try {
          latch.await();
       } catch (InterruptedException e) {
          throw new RuntimeException(e);
       }
-      log.info("successfully finished processing tasks");
+      log.info("successfully finished processing tasks with reqId "+requestId);
    }
 
-   private void init(Integer maxThreadCount){
-      if (taskMonitor == null){
-         taskMonitor = new Semaphore(maxThreadCount);
-      }
+   public List<TaskTRequestVo> getRunningTasks(){
+      return taskMonitor.getCurrentTasks();
    }
 
-   private void startTask(AsyncTask task){
-      try {
-         taskMonitor.acquire();
-         log.info(">>> Trigerring task "+task.taskId);
-         task.start();
-      } catch (InterruptedException e) {
-         throw new RuntimeException(e);
-      }
+   private void startTask(AsyncTask task, String requestId ){
+      taskMonitor.acquire(task);
+      task.start();
    }
 }
