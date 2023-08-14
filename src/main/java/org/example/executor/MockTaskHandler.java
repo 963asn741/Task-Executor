@@ -32,6 +32,6 @@ public class MockTaskHandler implements TaskHandler{
 
     private void doCallBack(AsyncTask task){
         task.latch.countDown();
-        log.debug(">>> "+ task.taskId +" Callback called");
+        log.debug("==="+ task.taskId +" Callback called");
     }
 }

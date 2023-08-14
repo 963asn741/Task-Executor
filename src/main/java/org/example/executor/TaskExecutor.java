@@ -36,7 +36,7 @@ public class TaskExecutor {
       } catch (InterruptedException e) {
          throw new RuntimeException(e);
       }
-      log.info("successfully finished processing tasks");
+      log.info("successfully finished triggering tasks");
       System.gc();
    }
 
@@ -46,9 +46,11 @@ public class TaskExecutor {
 
    private synchronized void triggerExecutor(){
       if(!executorIsRunning.get()){
+         if (!taskQueue.isEmpty()) executorIsRunning.set(true);
          while(!taskQueue.isEmpty()){
             startTask(taskQueue.poll());
          }
+         executorIsRunning.set(false);
       }
    }
 
