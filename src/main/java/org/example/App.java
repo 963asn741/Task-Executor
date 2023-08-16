@@ -18,11 +18,11 @@ public class App
 
     public static void doTheThing(){
         TaskExecutor executer = new TaskExecutor();
-        AsyncTask taskA = new AsyncTask(executer, 1l, Boolean.TRUE, 5000L);
-        AsyncTask taskB = new AsyncTask(executer, 2l, Boolean.FALSE, 5000L);
-        AsyncTask taskC = new AsyncTask(executer, 3l, Boolean.TRUE, 5000L);
-        AsyncTask taskD = new AsyncTask(executer, 4l, Boolean.FALSE, 5000L);
-        AsyncTask taskE = new AsyncTask(executer, 5l, Boolean.TRUE, 5000L);
+        AsyncTask taskA = new AsyncTask(executer, 1l, Boolean.TRUE, "123");
+        AsyncTask taskB = new AsyncTask(executer, 2l, Boolean.FALSE, "123");
+        AsyncTask taskC = new AsyncTask(executer, 3l, Boolean.TRUE, "123");
+        AsyncTask taskD = new AsyncTask(executer, 4l, Boolean.FALSE, "123");
+        AsyncTask taskE = new AsyncTask(executer, 5l, Boolean.TRUE, "123");
         System.out.println("===TRIGGERING TASKS===");
         executer.executeTasks(Arrays.asList(taskA, taskB, taskC, taskD, taskE), new CountDownLatch(5));
         System.out.println("===DONE TRIGGERING===");

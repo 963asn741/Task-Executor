@@ -4,12 +4,13 @@ import org.example.vo.TaskRequestVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component("customTaskMonitor")
 public class TaskMonitor {
-    @Value("${app.max_concurrent_threads}")
+    @Value("${app.maxConcurrentThreads}")
     private Integer MAX_THREAD_COUNT;
     private Integer currentCount = 0;
     private ConcurrentLinkedQueue<AsyncTask> taskQueue = new ConcurrentLinkedQueue<>();
@@ -31,11 +32,12 @@ public class TaskMonitor {
             taskQueue.remove(task);
             currentCount--;
             notifyAll();
+            //System.out.println("released monitor lock");
         }
     }
 
     protected List<TaskRequestVo> getCurrentTasks(){
-        return taskQueue.stream().map(x-> new TaskRequestVo(x.taskId, x.processingTime, x.awaitTaskCompletion)).toList();
+        return taskQueue.stream().map(x-> new TaskRequestVo(x.taskId, x.awaitTaskCompletion)).toList();
     }
 
     private boolean isAvailable(){

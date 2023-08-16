@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.bo.TaskHandlerBo;
 import org.example.vo.TaskRequestVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class TaskController {
     private TaskHandlerBo taskHandlerBo;
 
     @PostMapping("/process-tasks")
-    public ResponseEntity<?> processTasks(@RequestBody List<TaskRequestVo> bulkTasks){
-        return new ResponseEntity<>(taskHandlerBo.processTasks(bulkTasks), HttpStatus.OK);
+    public ResponseEntity<?> processTasks(@RequestBody List<TaskRequestVo> bulkTasks, HttpServletRequest request){
+        return new ResponseEntity<>(taskHandlerBo.processTasks(bulkTasks, request.getRequestId()), HttpStatus.OK);
     }
 
     @GetMapping("/running-tasks")

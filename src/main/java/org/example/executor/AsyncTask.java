@@ -6,14 +6,15 @@ public class AsyncTask {
     public TaskExecutor executor;
     public Boolean awaitTaskCompletion;
     public Long taskId;
+    public String reqId;
+    public String taskStatus;
     public Long processingTime;
-
     public CountDownLatch latch;
 
-    public AsyncTask(TaskExecutor executor, Long taskId, Boolean awaitTaskCompletion, Long processingTime){
+    public AsyncTask(TaskExecutor executor, Long taskId, Boolean awaitTaskCompletion, String reqId){
         this.executor = executor;
         this.taskId = taskId;
         this.awaitTaskCompletion = awaitTaskCompletion;
-        this.processingTime = processingTime;
+        this.reqId = reqId;
     }
 }
