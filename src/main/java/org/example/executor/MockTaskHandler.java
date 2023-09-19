@@ -26,15 +26,6 @@ public class MockTaskHandler implements TaskHandler{
     private Float taskFailureProbability ;
 
     @Override
-    public void handleTaskExecution(AsyncTask task) {
-        log.debug("EXEC -> handleTaskExecution()");
-        Thread thread = new Thread(() -> {
-            executeTask(task);
-        });
-        thread.start();
-    }
-
-    @Override
     public void executeTask(AsyncTask task) {
         try {
             task.processingTime = random.nextLong(processingTimeLowerLimit, processingTimeUpperLimit);
@@ -62,13 +53,6 @@ public class MockTaskHandler implements TaskHandler{
             log.info("### "+ task.taskId +" Done executing with failure");
             task.executor.taskMonitor.release(task);
         }
-    }
-
-    @Override
-    public void doCallBack(AsyncTask task){
-        task.executor.callBack(task);
-        task.latch.countDown();
-        log.debug("==="+ task.taskId +" Callback called");
     }
 
     private Boolean shouldTaskFail(){
